@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MoodPulse - Submit Your Mood</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+    <h1>MoodPulse 🎓</h1>
+    <p>How are you feeling about today's session? Your response is anonymous.</p>
+
+    <label for="sessionId">Session code</label>
+    <input id="sessionId" type="text" placeholder="e.g. agile-lecture-14oct" value="agile-lecture-14oct" />
+
+    <div class="moods">
+      <button class="mood-btn" data-mood="great">😄<br>Great</button>
+      <button class="mood-btn" data-mood="good">🙂<br>Good</button>
+      <button class="mood-btn" data-mood="okay">😐<br>Okay</button>
+      <button class="mood-btn" data-mood="confused">😕<br>Confused</button>
+      <button class="mood-btn" data-mood="bad">😢<br>Bad</button>
+    </div>
+
+    <label for="comment">Optional comment</label>
+    <textarea id="comment" maxlength="280" placeholder="Anything specific? (optional)"></textarea>
+
+    <button id="submitBtn" disabled>Submit anonymously</button>
+    <p id="status"></p>
+
+    <a href="dashboard.html">View live dashboard →</a>
+  </main>
+
+  <script>
+    let selectedMood = null;
+    const buttons = document.querySelectorAll('.mood-btn');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusEl = document.getElementById('status');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedMood = btn.dataset.mood;
+        submitBtn.disabled = false;
+      });
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      const sessionId = document.getElementById('sessionId').value.trim();
+      const comment = document.getElementById('comment').value.trim();
+
+      if (!sessionId || !selectedMood) return;
+
+      try {
+        const res = await fetch('/api/mood', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, mood: selectedMood, comment }),
+        });
+        if (res.ok) {
+          statusEl.textContent = 'Thanks! Your mood was recorded anonymously.';
+          statusEl.style.color = 'green';
+        } else {
+          statusEl.textContent = 'Something went wrong. Please try again.';
+          statusEl.style.color = 'red';
+        }
+      } catch (err) {
+        statusEl.textContent = 'Network error.';
+        statusEl.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>

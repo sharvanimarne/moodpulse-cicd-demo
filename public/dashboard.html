@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MoodPulse - Dashboard</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+    <h1>Live Mood Dashboard 📊</h1>
+    <label for="sessionId">Session code</label>
+    <input id="sessionId" type="text" value="agile-lecture-14oct" />
+    <button id="refreshBtn">Refresh</button>
+
+    <div id="counts" class="counts"></div>
+
+    <h2>Comments</h2>
+    <ul id="comments"></ul>
+  </main>
+
+  <script>
+    const emojiFor = { great: '😄', good: '🙂', okay: '😐', confused: '😕', bad: '😢' };
+
+    async function loadData() {
+      const sessionId = document.getElementById('sessionId').value.trim();
+      if (!sessionId) return;
+
+      const res = await fetch(`/api/moods/${encodeURIComponent(sessionId)}`);
+      const data = await res.json();
+
+      const countsEl = document.getElementById('counts');
+      countsEl.innerHTML = Object.entries(data.counts)
+        .map(([mood, n]) => `<div class="count-pill">${emojiFor[mood]} ${mood}: <strong>${n}</strong></div>`)
+        .join('');
+
+      const commentsEl = document.getElementById('comments');
+      commentsEl.innerHTML = data.comments.length
+        ? data.comments.map((c) => `<li>"${c.comment}"</li>`).join('')
+        : '<li><em>No comments yet</em></li>';
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadData);
+    loadData();
+    setInterval(loadData, 5000);
+  </script>
+</body>
+</html>
