@@ -3,10 +3,7 @@
 
 FA2 Skill-Based Activity — Agile Software Development
 Pimpri Chinchwad College of Engineering | B.Tech IT, Final Year
-
-**Team:**
 - Sharvani Marne — PRN 123B1F061
-- Siddharth Kakade — PRN 123B1F040
 
 ## What it does
 Students anonymously tap an emoji (😄🙂😐😕😢) to record how they feel about a lecture/session,
